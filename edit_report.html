@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+    
+    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="js/new_report_map.js"></script>
+    <script src="node_modules/pouchdb/dist/pouchdb.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- <link rel="stylesheet" type="text/css" href="css/new_report.css" /> -->
+    <link rel="stylesheet" type="text/css" href="css/edit_report.css" />
+    <link rel="stylesheet" type="text/css" href="css/new_report_map.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    
+    <link rel="icon" type="image/png" href="img/luas_logo.png">
+
+    <title>LUAS e-Report&trade;</title>
+
+</head>
+
+<body onload="onLoad()">
+
+    <!-- <div class="app">
+        <h1>PhoneGap</h1>
+        <div id="deviceready" class="blink">
+            <p class="event listening">Connecting to Device</p>
+            <p class="event received">Device is Ready</p>
+        </div>
+    </div> -->
+
+    <div style="position: fixed;width: 100%;z-index: 1;">
+        <div class="topnav">
+            <img src="img/luas_logo.png" style="height: 30px; width: 25px;">  &nbsp;&nbsp;
+            <span>LUAS GEOGRAPHIC INFORMATION SYSTEM</span>
+        </div>
+
+        <div class="topnav2" >
+            <button class="btn" style="float: right;" onclick="window.location.href='status_report.html'"><i class="fa fa-angle-left" style="font-size:20px"></i></button> &nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <span style="margin:auto; display:table;"><b>Edit Laporan</b></span>
+            <button class="btn" style="float: right;" onclick="openNav2()"><i class="fa fa-bell"></i><div id="noti_badge"> </div></button> &nbsp;&nbsp;
+            <button class="btn" style="float: right;" onclick="openNav()"><i class="fa fa-bars"></i></button>
+        </div>
+    </div>
+
+    <br><br><br><br><br><br><br><br>
+
+    <div id="mySidenav" class="sidenav">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <a href="">Change Password</a> <br>
+        <a href="">Setting</a><br>
+        <a href="javascript:void(0)" onclick="logOut()">Logout</a> <br>
+
+        <div class="footer-navbar">
+            Version 1.0 <br>
+            Copyright&#174;2020 LUAS. <br>
+            All rights reserved.
+        </div>
+    </div>
+
+    <div id="mySidenav2" class="sidenav">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <div id="noti_list" class="noti_list">
+        </div>
+    </div>
+
+    <div class="container" id="container">
+
+        <div id="stepProgressBar" style="position: relative;">
+
+            <div class="middle"></div>
+      
+            <div class="step">
+              <button id="tab1" class="bullet completed" onclick="loadUtama()"></button>
+            </div>
+      
+            <div class="step">
+              <button id="tab2" class="bullet" onclick="loadAduan()"></button>
+            </div>
+      
+            <div class="step">
+              <button id="tab3" class="bullet" onclick="loadPengadu()"></button>
+            </div>
+      
+            <div class="step">
+              <button id="tab4" class="bullet" onclick="loadPelaku()"></button>
+            </div>
+      
+            <div class="step">
+              <button id="tab5" class="bullet" onclick="loadLaporanBertulis()"></button>
+            </div>
+      
+            <div class="step">
+              <button id="tab6" class="bullet"  onclick="loadPengesahan()"></button>
+            </div>
+      
+        </div>
+
+        <form id="form_id">
+
+            <!-------------------------------------------------------MAKLUMAT UTAMA SECTION------------------------------------------------------->
+            <div id="utama" class="tabcontent" style="display:block;">
+
+                <span style="text-align: left;font-size: 18px; font-weight: bold;">MAKLUMAT UTAMA</span> <hr>  <br>
+
+                <div>
+                    <label for="fname">No. Rujukan Fail LUAS : </label>
+                    <input readonly style="width: 100%;" type="text" id="utama_rujukan" name="no_rujukan" pattern="[^'\x22]+" placeholder="No. Rujukan.." />
+                </div>
+
+                <div>
+                    <label>Kategori Laporan :</label>
+                    <select id="utama_kategori" name="kategori_laporan" style="width: 100%;">
+                    </select>
+                </div>
+
+                <div style="display: flex; text-align: left;">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 50%;"><label>Bahagian :</label></td>
+                            <td style="width: 50%;"><label>Unit :</label></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div style="display: flex; ">
+                    <select id="utama_bahagian" name="bahagian">
+                    </select>
+
+                    <select id="utama_unit" name="unit">
+                    </select>
+                </div>
+
+                <div style="display: flex; text-align: left;">
+                    <label>Tarikh Lawatan :</label>
+                </div>
+
+                <div style="display: flex; text-align: left;">
+                    <input placeholder="Dari" class="textbox-n" type="date" onfocus="(this.type='date')" onblur="(this.type='text')" id="utama_tarikhdari" name="tarikh_mula">
+                    <input placeholder="Hingga" class="textbox-n" type="date" onfocus="(this.type='date')" onblur="(this.type='text')" id="utama_tarikhhingga" name="tarikh_akhir">
+                </div>
+
+                <div style="display: flex; text-align: left;">
+                    <label>Masa Lawatan :</label>
+                </div>
+
+                <div style="display: flex; text-align: left;">
+                    <input type="time" id="utama_masadari" name="masa_mula">
+                    <input type="time" id="utama_masahingga" name="masa_akhir">
+                </div>
+
+                <div>
+                    <label for="fname">Tajuk : </label>
+                    <input style="width: 100%;" type="text" id="utama_tajuk" name="tajuk" placeholder="Tajuk.." />
+                </div>
+
+                <!-------------------------PEGAWAI TERLIBAT SECTION----------------------->
+
+                <br><br>
+                <span style="text-align: left;font-size: 15px; font-weight: bold;">PEGAWAI YANG TERLIBAT/HADIR</span> <hr>
+
+                <div style="display: flex; text-align: left;">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 50%;"><label>Bahagian :</label></td>
+                            <td style="width: 50%;"><label>Unit :</label></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div style="display: flex; ">
+                    <select id="utama2_bahagian" name="utama2_bahagian">
+                    </select>
+
+                    <select id="utama2_unit" name="utama2_unit">
+                    </select>
+                </div>
+
+
+                <div style="display: flex; text-align: left;">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 50%;"><label>Nama Pegawai :</label></td>
+                            <td style="width: 50%;"><label>Jawatan :</label></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div style="display: flex; ">
+                    <select id="utama2_nama_pegawai" name="utama2_nama_pegawai">
+                    </select>
+
+                    <select id="utama2_jawatan" name="utama2_jawatan">
+                    </select>
+                </div>
+
+                <button class="formButton" type="button" onclick="addPegawai()">Tambah Pegawai <i class="fa fa-user-plus" aria-hidden="true"></i></button>
+
+                <div style="overflow-x: scroll;">
+                    <table id="utama_table_pegawai">
+                        <thead>
+                            <tr>
+                                <th>Bahagian</th> <th>Unit</th> <th>Nama Pegawai</th> <th>Jawatan</th> <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="table_body_pghadir">
+
+                        </tbody>
+                        
+                    </table>
+                </div>
+
+                <!--------------------------KETUA UNIT SECTION---------------------------->
+
+                <br><br><br>
+                <span style="text-align: left;font-size: 15px; font-weight: bold;">KETUA UNIT</span> <hr> 
+
+                <label for="utama3_arahan">Minit/Arahan</label>
+                <textarea id="utama3_arahan" name="KU_minit" style="height:100px"></textarea>
+
+                <div style="display: flex; text-align: left;">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 50%;"><label>Nama Pegawai :</label></td>
+                            <td style="width: 50%;"><label>Jawatan :</label></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div style="display: flex; ">
+                    <select id="utama3_nama_pegawai" name="KU_nama_pegawai">
+                    </select>
+
+                    <select id="utama3_jawatan" name="KU_jawatan">
+                    </select>
+                </div>
+
+                <div style="display: flex; text-align: left;">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 50%;"><label>Bahagian/Unit :</label></td>
+                            <td style="width: 50%;"><label>Tarikh :</label></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div style="display: flex; ">
+                    <input type="text" id="utama3_bahagian" name="KU_bahagian_unit" value="Pejabat Wilayah Selangor/Bernam">
+
+                    <input placeholder="Sila Pilih Tarikh" class="textbox-n" type="date" onfocus="(this.type='date')" onblur="(this.type='text')" id="utama3_tarikh" name="KU_tarikh">
+                </div>
+
+                <!-----------------------------KETUA BAHAGIAN---------------------------------->
+
+                <br><br>
+                <span style="text-align: left;font-size: 15px; font-weight: bold;">KETUA BAHAGIAN</span> <hr>
+
+                <label for="utama4_arahan">Minit/Arahan</label>
+                <textarea id="utama4_arahan" name="KB_minit" style="height:100px"></textarea>
+
+                <div style="display: flex; text-align: left;">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 50%;"><label>Nama Pegawai :</label></td>
+                            <td style="width: 50%;"><label>Jawatan :</label></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div style="display: flex; ">
+                    <select id="utama4_nama_pegawai" name="KB_nama_pegawai">
+                    </select>
+
+                    <select id="utama4_jawatan" name="KB_jawatan">
+                    </select>
+                </div>
+
+                <div style="display: flex; text-align: left;">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 50%;"><label>Bahagian/Unit :</label></td>
+                            <td style="width: 50%;"><label>Tarikh :</label></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div style="display: flex; ">
+                    <select id="utama4_unit" name="KB_bahagian_unit">
+                    </select>
+
+                    <input placeholder="Sila Pilih Tarikh" class="textbox-n" type="date" onfocus="(this.type='date')" onblur="(this.type='text')" id="utama4_tarikh" name="KB_tarikh">
+                </div>
+
+                <br>
+   
+                <button class="navButton" type="button" style="float: right;" onclick="loadAduan()">Seterusnya</button>
+
+                <br><br><br>
+                
+            </div>
+
+            <!-------------------------------------------------------MAKLUMAT ADUAN SECTION------------------------------------------------------->
+            <div id="aduan_kes" class="tabcontent">
+            
+                <span style="text-align: left;font-size: 18px; font-weight: bold;">MAKLUMAT ADUAN/KES</span> <hr> <br>
+
+                <div style="display: flex; text-align: left;">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 50%;"><label>Jenis Aduan/Kes :</label></td>
+                            <td style="width: 50%;"><label>Sumber Air Terlibat :</label></td>
+                        </tr>
+                    </table>
+                </div>
+    
+                <div style="display: flex; ">
+                    <select class="multipleselect" id="aduan_jenis" name="jenis_aduan" multiple="multiple">
+                    </select>
+        
+                    <select class="multipleselect" id="aduan_sumber_terlibat" name="sumber_air" multiple="multiple">
+                    </select>
+                </div>
+
+                <div style="display: flex; text-align: left;">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 50%;"><label>Aktiviti Utama :</label></td>
+                            <td style="width: 50%;"><label>Sub Aktiviti :</label></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div style="display: flex; ">
+                    <select id="aktiviti_utama" name="aktiviti_utama">
+                    </select>
+        
+                    <select id="sub_aktiviti" name="sub_aktiviti">
+                    </select>
+                </div>
+    
+                <div style="display: flex; text-align: left;">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 50%;"><label>Nama Sumber Air :</label></td>
+                            <td style="width: 50%;"><label>Tempat Kejadian :</label></td>
+                        </tr>
+                    </table>
+                </div>
+    
+                <div style="display: flex;">
+                    <input type="text" id="aduan_nama_sumber" name="nama_sumber_air" placeholder="Nama Sumber Air..">
+        
+                    <select class="multipleselect" id="aduan_tempat_kejadian" name="tempat_kejadian" multiple="multiple">
+                    </select>
+                </div>
+
+                <div style="display: flex; text-align: left;">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 50%;"><label>Tarikh Siasatan:</label></td>
+                            <td style="width: 50%;"><label>Masa Siasatan :</label></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div style="display: flex; text-align: left;">
+                    <input placeholder="Tarikh aduan" class="textbox-n" type="date" onfocus="(this.type='date')" onblur="(this.type='text')" id="aduan_tarikh_siasatan" name="tarikh_siasatan">
+                    <input type="time" id="aduan_masa_siasatan" name="tarikh_siasatan">
+                </div>
+
+                <br><span style="text-align: left;font-size: 12px; font-weight: bold;">MAKLUMAT LOKASI</span> <hr>
+    
+                <div style="display: flex; text-align: left;">
+                    <label>Koordinat :</label>
+                </div>
+    
+                <div style="display: flex;">
+                    <input type="text" id="lat" name="latitude" placeholder="Latitude">
+                    <input type="text" id="lon" name="longitude" placeholder="Longitude">
+                </div>
+
+                <div id="map_here">
+                    <div id="popup" style="display: none;"><img src="img/svg/station_pin.svg"></div>
+                    <div id="map" class="map"></div>
+                </div>
+
+                <div style="display: flex; text-align: left;">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 50%;"><button id="pin_lokasi" class="formButton" type="button" onclick="getLocation()">Pin Lokasi <i class="fa fa-map-marker" aria-hidden="true"></i></button></td>
+                            <td style="width: 50%;" id="accuracy"></td>
+                        </tr>
+                    </table>
+                </div>
+    
+                <br>
+
+                <div style="display: flex; text-align: left;">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 50%;"><label>Lembangan :</label></td>
+                            <td style="width: 50%;"><label>Sub :</label></td>
+                        </tr>
+                    </table>
+                </div>
+    
+                <div style="display: flex; ">
+                    <select id="aduan_lembangan" name="lembangan">
+                    </select>
+        
+                    <select id="aduan_sub" name="sub">
+                    </select>
+                </div>
+
+                <div style="display: flex; text-align: left;">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 50%;"><label>PTD :</label></td>
+                            <td style="width: 50%;"><label>PBT :</label></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div style="display: flex; ">
+                    <select id="aduan_ptd" name="ptd">
+                    </select>
+        
+                    <select id="aduan_pbt" name="pbt">
+                    </select>
+                </div>
+                <!---------------------------------------HERE-------------------------------------->
+                <div style="display: flex; text-align: left;">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 50%;"><label>Aktiviti Dijalankan :</label></td>
+                            <td style="width: 50%;"><label>Kegunaan Air :</label></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div style="display: flex; ">
+                    <select id="aduan_aktiviti" name="aktiviti_yang_dijalankan">
+                    </select>
+        
+                    <input type="text" id="aduan_kegunaan_air" name="kegunaan_air" />
+                </div>
+
+                <div style="display: flex; text-align: left;">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 50%;"><label>Status Premis :</label></td>
+                            <td style="width: 50%;"><label>Mukim :</label></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div style="display: flex; ">
+                    <select id="aduan_status_premis" name="status_premis">
+                    </select>
+
+                    <select id="aduan_mukim" name="mukim">
+                    </select>
+                </div>
+
+                <div>
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 50%;"><label>No. Lot :</label></td>
+                            <td style="width: 50%;"><label for="aduan_gunatanah">Gunatanah : </label></td>
+                        </tr>
+                    </table>
+                    
+                </div>
+
+                <div style="display: flex; ">
+                    <input type="text" id="aduan_no_lot" name="no_lot" />
+
+                    <select id="aduan_gunatanah" name="guna_tanah">
+                    </select>
+                </div>
+               
+                <div>
+                    <label for="aduan_gunatanah">Muka Sauk Terdekat : </label>
+                </div>
+
+                <div style="display: flex;">
+                    <select id="aduan_mukasauk_terdekat">
+                    </select>
+
+                    <input type="number" id="aduan_mukasauk_no" placeholder="Jarak (km)" />
+                </div>
+
+                <button style="width: 100px;" id="add_muka_sauk" class="formButton" type="button" onclick="addMukaSauk()"> <i class="fa fa-plus"></i> Muka Sauk</button>
+
+                <div>
+                    <table id="aduan_table_mukasauk">
+                        <thead>
+                            <tr>
+                                <th>Muka Sauk</th> <th>Jarak (km)</th> <th> </th>
+                            </tr>
+                        </thead>
+                        <tbody id="table_body_mukasauk">
+
+                        </tbody>
+                    </table>
+                </div>
+
+                <br><br>
+
+                <div>
+                    <label for="aduan_loji_rawatan_terdekat">Loji Rawatan Air Terdekat : </label>
+                </div>
+
+                <div style="display: flex;">
+                    <select id="aduan_loji_rawatan_terdekat">
+                    </select>
+
+                    <input type="number" id="aduan_loji_rawatan_no" placeholder="Jarak (km)" />
+                </div>
+
+                <button style="width: 100px;" id="add_lra" class="formButton" type="button" onclick="addLRA()"> <i class="fa fa-plus"></i> LRA</button>
+
+                <div>
+                    <table id="aduan_table_lra">
+                        <thead>
+                            <tr>
+                                <th><b>Loji Rawatan Air</b></th> <th><b>Jarak (km)</b></th> <th> </th>
+                            </tr>
+                        </thead>
+                        <tbody id="table_body_lra">
+
+                        </tbody>
+                    </table>
+                </div>
+    
+                <br><br>
+
+                <button class="navButton" type="button" style="float: left;" onclick="loadUtama()">Kembali</button>
+                <button class="navButton" type="button" style="float: right;" onclick="loadPengadu()">Seterusnya</button>
+    
+                <br><br><br>
+    
+            </div>
+
+            <!-------------------------------------------------------MAKLUMAT PENGADU SECTION------------------------------------------------------->
+            <div id="pengadu" class="tabcontent">
+
+                <span style="text-align: left;font-size: 18px; font-weight: bold;">MAKLUMAT PENGADU</span> <hr> <br>
+
+                <div>
+                    <label for="pengadu_rujukan">No. Rujukan Surat Aduan/Kes : </label>
+                    <input type="text" style="width: 100%;" id="pengadu_rujukan" name="no_rujukan_surat_aduan" placeholder="No. Rujukan..">
+                </div>
+    
+                <div style="display: flex; text-align: left;">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 50%;"><label>Sumber Aduan/Kes :</label></td>
+                            <td style="width: 50%;"><label>Tarikh Aduan/Kes Diterima :</label></td>
+                        </tr>
+                    </table>
+                </div>
+    
+                <div style="display: flex; ">
+                    <select class="multipleselect" id="pengadu_sumber" name="sumber_aduan" multiple="multiple">
+                    </select>
+        
+                    <input placeholder="Tarikh Aduan" class="textbox-n" type="date" onfocus="(this.type='date')" onblur="(this.type='text')" id="aduan_tarikh" name="tarikh_aduan">
+                </div>
+
+                <div style="display: flex; text-align: left;">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 50%;"><label>Kategori Aduan/Kes :</label></td>
+                            <td style="width: 50%;"><label>Pengadu :</label></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div style="display: flex; ">
+                    <select class="multipleselect" id="pengadu_kategori" name="kategori_aduan" multiple="multiple">
+                    </select>
+        
+                    <select class="multipleselect" id="pengadu_pengadu" name="jenis_pengadu" multiple="multiple">
+                    </select>
+                </div>
+    
+                <div style="display: flex; text-align: left;">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 50%;"><label>Nama Pengadu :</label></td>
+                            <td style="width: 50%;"><label>No. Rumah/Premis :</label></td>
+                        </tr>
+                    </table>
+                </div>
+    
+                <div style="display: flex;">
+                    <input type="text" id="pengadu_nama" name="nama_pengadu" placeholder="Nama Pengadu">
+                    <input type="text" id="pengadu_norumah" name="no_rumah_pengadu" placeholder="No. Rumah/Premis">
+                </div>
+    
+                <div style="display: flex; text-align: left;">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 50%;"><label>Nama Jalan :</label></td>
+                            <td style="width: 50%;"><label>Nama Taman :</label></td>
+                        </tr>
+                    </table>
+                </div>
+    
+                <div style="display: flex;">
+                    <input type="text" id="pengadu_namajalan" name="nama_jalan_pengadu" placeholder="Nama Jalan">
+                    <input type="text" id="pengadu_namataman" name="nama_taman_pengadu" placeholder="Nama Taman">
+                </div>
+    
+                <div style="display: flex; text-align: left;">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 50%;"><label>Poskod :</label></td>
+                            <td style="width: 50%;"><label>Bandar :</label></td>
+                        </tr>
+                    </table>
+                </div>
+    
+                <div style="display: flex;">
+                    <input type="text" id="pengadu_poskod" name="poskod_pengadu" placeholder="Poskod">
+                    <input type="text" id="pengadu_bandar" name="bandar_pengadu" placeholder="Bandar">
+                </div>
+
+                <div>
+                    <label>Negeri :</label> 
+                    <select id="pengadu_negeri" name="negeri_pengadu">
+                        <option value="Selangor">Selangor</option>
+                        <option value="Kuala Lumpur">Kuala Lumpur</option>
+                        <option value="Putrajaya">Putrajaya</option>
+                        <option value="Negeri Sembilan">Negeri Sembilan</option>
+                        <option value="Melaka">Melaka</option>
+                        <option value="Perak">Perak</option>
+                        <option value="Perlis">Perlis</option>
+                        <option value="Kedah">Kedah</option>
+                        <option value="Pulau Pinang">Pulau Pinang</option>
+                        <option value="Johor">Johor</option>
+                        <option value="Pahang">Pahang</option>
+                        <option value="Terengganu">Terengganu</option>
+                        <option value="Kelantan">Kelantan</option>
+                        <option value="Labuan">Labuan</option>
+                        <option value="Sabah">Sabah</option>
+                        <option value="Sarawak">Sarawak</option>
+                    </select>
+                </div>
+    
+                <div style="display: flex; text-align: left;">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 50%;"><label>No. Telefon :</label></td>
+                            <td style="width: 50%;"><label>No. Faks :</label></td>
+                        </tr>
+                    </table>
+                </div>
+    
+                <div style="display: flex;">
+                    <input type="text" id="pengadu_notelefon" name="no_telefon_pengadu" placeholder="01********">
+                    <input type="text" id="pengadu_faks" name="no_faks_pengadu" placeholder="0*******">
+                </div>
+
+                <br>
+
+                <button class="navButton" type="button" style="float: left;" onclick="loadAduan()">Kembali</button>
+                <button class="navButton" type="button" style="float: right;" onclick="loadPelaku()">Seterusnya</button>
+    
+                <br><br><br>
+    
+            </div>
+
+            <!-------------------------------------------------------MAKLUMAT PELAKU SECTION------------------------------------------------------->
+            <div id="pelaku" class="tabcontent">
+
+                <span style="text-align: left;font-size: 18px; font-weight: bold;">MAKLUMAT PELAKU</span> <hr> <br>
+    
+                <div style="display: flex; text-align: left;">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 50%;"><label>Kategori Pelaku :</label></td>
+                            <td style="width: 50%;"><label>Nama :</label></td>
+                        </tr>
+                    </table>
+                </div>
+    
+                <div style="display: flex;">
+                    <select class="multipleselect" id="pelaku_kategori" name="kategori_pelaku" multiple="multiple">
+                    </select>
+        
+                    <input type="text" id="pelaku_nama" name="nama_pelaku">
+                </div>
+    
+                <div style="display: flex; text-align: left;">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 50%;"><label>No KP/Syarikat/Pemaju :</label></td>
+                            <td style="width: 50%;"><label>No Rumah/Premis :</label></td>
+                        </tr>
+                    </table>
+                </div>
+    
+                <div style="display: flex;">
+                    <input type="text" id="pelaku_nokp" name="no_kp_pelaku">
+                    <input type="text" id="pelaku_norumah" name="no_rumah_pelaku">
+                </div>
+    
+                <div style="display: flex; text-align: left;">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 50%;"><label>Nama Jalan :</label></td>
+                            <td style="width: 50%;"><label>Nama Taman :</label></td>
+                        </tr>
+                    </table>
+                </div>
+    
+                <div style="display: flex;">
+                    <input type="text" id="pelaku_namajalan" name="nama_jalan_pelaku">
+                    <input type="text" id="pelaku_namataman" name="nama_taman_pelaku">
+                </div>
+    
+                <div style="display: flex; text-align: left;">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 33%;"><label>Poskod :</label></td>
+                            <td style="width: 33%;"><label>Bandar :</label></td>
+                        </tr>
+                    </table>
+                </div>
+    
+                <div style="display: flex;">
+                    <input type="text" id="pelaku_poskod" name="poskod_pelaku" placeholder="Poskod">
+                    <input type="text" id="pelaku_bandar" name="bandar_pelaku" placeholder="Bandar">
+                </div>
+
+                <div>
+                    <label>Negeri :</label>
+                    <select id="pelaku_negeri" name="negeri_pelaku">
+                        <option value="Selangor">Selangor</option>
+                        <option value="Kuala Lumpur">Kuala Lumpur</option>
+                        <option value="Putrajaya">Putrajaya</option>
+                        <option value="Negeri Sembilan">Negeri Sembilan</option>
+                        <option value="Melaka">Melaka</option>
+                        <option value="Perak">Perak</option>
+                        <option value="Perlis">Perlis</option>
+                        <option value="Kedah">Kedah</option>
+                        <option value="Pulau Pinang">Pulau Pinang</option>
+                        <option value="Johor">Johor</option>
+                        <option value="Pahang">Pahang</option>
+                        <option value="Terengganu">Terengganu</option>
+                        <option value="Kelantan">Kelantan</option>
+                        <option value="Labuan">Labuan</option>
+                        <option value="Sabah">Sabah</option>
+                        <option value="Sarawak">Sarawak</option>
+                    </select>
+                </div>
+    
+                <div style="display: flex; text-align: left;">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 50%;"><label>No. Telefon :</label></td>
+                            <td style="width: 50%;"><label>No. Faks :</label></td>
+                        </tr>
+                    </table>
+                </div>
+    
+                <div style="display: flex;">
+                    <input type="text" id="pelaku_notelefon" name="no_telefon_pelaku" placeholder="01********">
+                    <input type="text" id="pelaku_faks" name="no_faks_pelaku" placeholder="0*******">
+                </div>
+
+                <br>
+
+                <button class="navButton" type="button" style="float: left;" onclick="loadPengadu()">Kembali</button>
+                <button class="navButton" type="button" style="float: right;" onclick="loadLaporanBertulis()">Seterusnya</button>
+    
+                <br><br><br>
+    
+            </div>
+
+            <!-------------------------------------------------------PELAPORAN BERTULIS SECTION------------------------------------------------------->
+            <div id="pelaporan_bertulis" class="tabcontent">
+
+                <span style="text-align: left;font-size: 18px; font-weight: bold;">PELAPORAN BERTULIS</span> <hr> <br>
+    
+                <label for="arahan">Tujuan dan Latar Belakang</label>
+                <textarea id="laporan_tujuan" name="tujuan_latarbelakang" style="height:100px"></textarea>
+    
+                <label for="arahan">Kronologi Aduan/Kes</label>
+                <textarea id="laporan_kronologi" name="kronologi_aduan" style="height:100px"></textarea>
+    
+                <label for="arahan">Hasil Lawatan Siasatan Tapak</label>
+                <textarea id="laporan_hasil" name="hasil_lawatan" style="height:100px"></textarea>
+    
+                <label for="arahan">Asas-asas Pertimbangan (Punca Kuasa Dan Perundangan)</label>
+                <textarea id="laporan_pertimbangan" name="asas_pertimbangan" style="height:100px"></textarea>
+    
+                <label for="arahan">Cadangan/Syor Penyelesaian</label>
+                <textarea id="laporan_cadangan" name="cadangan_penyelesaian" style="height:100px"></textarea>
+    
+                <label for="arahan">Kesimpulan</label>
+                <textarea id="laporan_kesimpulan" name="kesimpulan" style="height:100px"></textarea>
+    
+                <label>Pelaporan Bergambar :</label> <br>
+                
+                <label for="img_this" class="custom-file-upload" style="width: 100px">
+                    Pilih Gambar <i class="fa fa-paperclip" aria-hidden="true"></i>
+                </label>
+                <input id="img_this" type="file" class="fileToUpload" accept="image/*;" capture="capture" onchange="theimage();"/>
+
+                <button style="width: 100px" class="formButton" id="take_photo" type="button">Gambar <i class="fa fa-camera" aria-hidden="true"></i></button>
+                <p id="msg" style="display: none;"></p>
+
+                <!-- <span id="imgHere"></span> -->
+
+                <br><br>
+    
+                <label>Keterangan Gambar :</label>
+                <div style="display: flex;">
+                    <input type="text" id="laporan_caption" style="width: 100%;margin-top: 6px;margin-bottom: 10px;">
+
+                    <button style="width:50px; height:35px;margin-top: 8px" class="formButton" type="button" onclick="addGambar()"> <i class="fa fa-plus"></i></button>
+                </div>
+
+                <div style="height: 100px; border-style: ridge;display: none;">
+                    <img src="" id="myImage">
+                </div>
+    
+                <div id="img_here" style="height: 150px; border: 1px solid #ccc;display: none; border-radius: 3%;">
+                    <center><img style="max-height:250px; max-width:100%;" src="" id="photo"></center>
+                </div>
+
+                <div style="overflow-x: scroll;">
+                    <table id="laporan_gambar_table" style="width:100%">
+                        <thead>
+                            <tr>
+                                <td><b>Gambar</b></td> <td><b>Keterangan</b></td> <td> </td>
+                            </tr>
+                        </thead>
+
+                        <tbody id="table_body_gambar">
+                        </tbody>
+                    </table>
+                </div>
+    
+                <br><br>
+                
+                <button class="navButton" type="button" style="float: left;" onclick="loadPelaku()">Kembali</button>
+                <button class="navButton" type="button" style="float: right;" onclick="loadPengesahan()">Seterusnya</button>
+                
+                <br><br><br>
+    
+            </div>
+
+            <!-------------------------------------------------------PENGESAHAN SECTION------------------------------------------------------->
+            <div id="pengesahan" class="tabcontent">
+
+                <span style="text-align: left;font-size: 18px; font-weight: bold;">PENGESAHAN</span> <hr><br>
+
+                <span style="text-align: left;font-size: 12px; font-weight: bold;">DISEMAK OLEH</span> <hr>
+
+                <div style="display: flex; text-align: left;">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 50%;"><label>Name Pegawai :</label></td>
+                            <td style="width: 50%;"><label>Jawatan :</label></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div style="display: flex;">
+                    <select id="pengesahan_semak_nama_pegawai" name="nama_pegawai_semak">
+                    </select>
+
+                    <select id="pengesahan_semak_jawatan" name="jawatan_pegawai_semak">
+                    </select>
+                </div>
+
+                <div style="display: flex; text-align: left;">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 50%;"><label>Bahagian :</label></td>
+                            <td style="width: 50%;"><label>Tarikh :</label></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div style="display: flex; text-align: left;">
+                    <select id="pengesahan_semak_bahagian" name="bahagian_pegawai_semak">
+                    </select>
+
+                    <input placeholder="Sila Pilih Tarikh" class="textbox-n" type="date" onfocus="(this.type='date')" onblur="(this.type='text')" id="pengesahan_semak_tarikh" name="tarikh_semak">
+                </div>
+
+                <br>
+
+                <span style="text-align: left;font-size: 12px; font-weight: bold;">DISAHKAN OLEH</span> <hr>
+
+                <div style="display: flex; text-align: left;">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 50%;"><label>Name Pegawai :</label></td>
+                            <td style="width: 50%;"><label>Jawatan :</label></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div style="display: flex;">
+                    <select id="pengesahan_sah_nama_pegawai" name="nama_pegawai_sah">
+                    </select>
+
+                    <select id="pengesahan_sah_jawatan" name="jawatan_pegawai_sah">
+                    </select>
+                </div>
+
+                <div style="display: flex; text-align: left;">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 50%;"><label>Bahagian :</label></td>
+                            <td style="width: 50%;"><label>Tarikh :</label></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div style="display: flex; text-align: left;">
+                    <select id="pengesahan_sah_bahagian" name="bahagian_pegawai_sah">
+                    </select>
+                    
+                    <input placeholder="Sila Pilih Tarikh" class="textbox-n" type="date" onfocus="(this.type='date')" onblur="(this.type='text')" id="pengesahan_sah_tarikh" name="tarikh_sah">
+                </div>
+
+                <input type="hidden" id="no_ic" name="no_ic">
+                <input type="hidden" id="user_type" name="user_type" value="mobile">
+                
+                <button class="navButton" type="button" style="float: left;" onclick="loadLaporanBertulis()">Kembali</button>
+                <!-- <button class="submitButton" id="submit_btn" type="submit" >Simpan</button> -->
+                <!-- <input class="submitButton" id="submit_btn" type="submit" value="Simpan" /> -->
+                <button class="submitButton" id="offline_btn" type="button" onclick="keepStorage()">Simpan</button>
+                
+                <br><br><br>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    <div class="navbar">
+        <a href="new_report.html"><i class="fa fa-file-text" aria-hidden="true"><br><span style="font-size: 10px;">Tambah Laporan</span></i></a> 
+        <a style="color:#2e86c1;" href="status_report.html"><i class="fas fa-file"><br><span style="font-size: 10px;">Status Laporan</span></i></a> 
+        <a href="report.html"><i class="fa fa-file-text"><br><span style="font-size: 10px;">Senarai Laporan</span></i></a> 
+    </div>
+
+
+    <script type="text/javascript" src="cordova.js"></script>
+    
+    <!-- <script type="text/javascript">
+        app.initialize();
+    </script> -->
+
+    <script type="text/javascript" src="js/edit_report.js"></script>
+
+<script>
+
+function onLoad() {
+    document.addEventListener("deviceready", onDeviceReady, false);
+    console.log("YES");
+}
+
+
+function onDeviceReady() {
+    // Now safe to use device APIs
+    console.log("Now safe to use device APIs");
+}
+
+
+document.getElementById('cameraApp').addEventListener('click',cameraApp);
+function cameraApp(){
+    navigator.camera.getPicture(onSuccess,onFail, {
+        quality:100,
+        saveToPhotoAlbum:true,
+        destinationType:Camera.destinationType.DATA_URL
+    });
+
+    function onSuccess(imageData){
+        var image = document.getElementById('myImage');
+        image.src = "data:image/jpeg;base64," + imageData;
+    }
+
+    function onFail(message){
+        alert('Failed because : ' + message);
+    }
+}
+
+</script>
+    
+    
+</body>
+
+
+</html>

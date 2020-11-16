@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+    <script src="node_modules/pouchdb/dist/pouchdb.min.js"></script>
+    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
+    <script src="js/jquery.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/report.css" />
+    <link rel="stylesheet" type="text/css" href="css/icon/font-awesome.min.css" />
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> -->
+    <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css" />
+    <script src="js/jquery.dataTables.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
+    <!-- <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script> -->
+    <link rel="icon" type="image/png" href="img/luas_logo.png">
+    <title>LUAS e-Report&trade;</title>
+</head>
+
+<body>
+    
+    <div style="position: fixed;width: 100%;z-index: 1;">
+        <div class="topnav">
+            <img src="img/luas_logo.png" style="height: 30px; width: 25px;">  &nbsp;&nbsp;
+            <span>LUAS GEOGRAPHIC INFORMATION SYSTEM</span>
+        </div>
+
+        <div class="topnav2">
+            <!-- <button class="btn" style="float: right;" onclick="window.location.href='map.html'"><i class="fas fa-map-marker-alt"></i></button> &nbsp;&nbsp; -->
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <span style="margin:auto; display:table;"><b>Senarai Laporan</b></span>
+            <button class="btn" style="float: right;" onclick="openNav2()"><i class="fa fa-bell"></i><div id="noti_badge"></div></button> &nbsp;&nbsp;
+            <button class="btn" style="float: right;" onclick="openNav()"><i class="fa fa-bars"></i></button>
+        </div>
+    </div>
+
+
+    <div id="mySidenav" class="sidenav">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <a href="">Change Password</a> <br>
+        <a href="">Setting</a><br>
+        <a href="javascript:void(0)" onclick="logOut()">Logout</a> <br>
+
+        <div class="footer-navbar">
+            Version 1.0 <br>
+            Copyright&#174;2020 LUAS. <br>
+            All rights reserved.
+        </div>
+    </div>
+
+    <div id="mySidenav2" class="sidenav">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+
+        <div id="noti_list" class="noti_list">
+        </div>
+    </div>
+
+
+    <div class="container" id="container">
+
+        <br><br><br><br><br><br><br><br>
+
+        <table id="table_report_select" style="width: 100%;">
+            <tr>
+                <td>Kategori Laporan: </td> <td>Bahagian: </td> <td>Unit: </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <select id="utama_kategori" style="width: 100%;">
+                    </select>
+                </td>
+                <td>
+                    <select id="utama_bahagian" name="utama_bahagian" onchange="filterUnit()" style="width: 100%;">
+                    </select>
+                </td>
+                <td>
+                    <select id="utama_unit" name="utama_unit" style="width: 100%;">
+                    </select>
+                </td>
+            </tr>
+        </table>
+
+        <center><button class="submitButton" id="displayTable>" onclick="displayTable()">Carian <i class="fa fa-search"></i></button> </center>
+
+        <br><br>
+
+        <div class="report_content" id="report_content">
+
+            <table id="table_report" >
+                <thead style="text-align: center;">
+                    <tr>
+                        <th>Kategori Laporan</th> <th>Bahagian</th> <th>Unit</th> <th>No.<br>Rujukan</th> <th>Lawatan Tapak</th> <th>Tarikh Mula</th> <th>Tarikh Akhir</th> <th>Papar PDF</th> 
+                    </tr>
+                </thead>
+                
+                <!-- <tbody id="report_table_body">
+
+                    <tr>
+                        <td>01</td> <td>69-420</td> <td>47</td> <td>89</td> <td>456</td> <td>28/08/2020</td> <td>29/08/2020</td> <td> <button type="button" class='table_edit_button' onclick="location.href='http://175.136.253.77:8181/ereport/pdf?id=77&simpanan_fail=2/1/LAPORAN%20LAWATAN%20SIASATAN%20TAPAK/77&template=3'"><i class='fa fa-file-pdf-o' style='font-size:18px;color:white;'></i></button> </td>
+                    </tr> 
+
+                    <tr>
+                        <td>01</td> <td>691-420</td> <td>47</td> <td>89</td> <td>456</td> <td>28/08/2020</td> <td>29/08/2020</td> <td> <button type="button" class='table_edit_button' onclick="open_pdf()"><i class='fa fa-file-pdf-o' style='font-size:18px;color:white;'></i></button> </td>
+                    </tr> 
+
+                </tbody> -->
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <div class="navbar">
+        <a href="new_report.html"><i class="fa fa-file-text" aria-hidden="true"><br><span style="font-size: 10px;">Tambah Laporan</span></i></a> 
+        <a href="status_report.html"><i class="fa fa-file"><br><span style="font-size: 10px;">Status Laporan</span></i></a> 
+        <a style="color:#2e86c1;" href="report.html"><i class="fa fa-file-text"><br><span style="font-size: 10px;"><b>Senarai Laporan</b></span></i></a>
+    </div>
+
+    <div class="alert" id="alert" style="display:none;">
+        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
+        <strong>No internet connection.</strong> Currently in offline mode.
+    </div>
+
+    <script type="text/javascript" src="cordova.js"></script>
+
+    <script type="text/javascript" src="js/report.js"></script>
+
+</body>
+
+
+</html>
